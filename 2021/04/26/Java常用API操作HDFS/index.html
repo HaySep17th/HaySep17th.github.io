@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Hello World, 絵空事">
+    <meta name="keywords" content="Java常用API操作HDFS, 絵空事">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Hello World | 絵空事</title>
+    <title>Java常用API操作HDFS | 絵空事</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -310,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/source/images/1.png')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Hello World</h1>
+                    <h1 class="description center-align post-title">Java常用API操作HDFS</h1>
                 </div>
             </div>
         </div>
@@ -429,12 +429,33 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Java/">
+                                <span class="chip bg-color">Java</span>
+                            </a>
+                        
+                            <a href="/tags/HDFS/">
+                                <span class="chip bg-color">HDFS</span>
+                            </a>
+                        
+                            <a href="/tags/Hadoop/">
+                                <span class="chip bg-color">Hadoop</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Hadoop/" class="post-category">
+                                Hadoop
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -443,7 +464,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-03-31
+                    2021-04-26
                 </div>
                 
 
@@ -452,7 +473,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    75
+                    1.5k
                 </div>
                 
 
@@ -469,19 +490,35 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+                <h1 id="1、使用到的类说明"><a href="#1、使用到的类说明" class="headerlink" title="1、使用到的类说明"></a>1、使用到的类说明</h1><hr>
+<h2 id="1、FileSystem：文件系统的抽象基类"><a href="#1、FileSystem：文件系统的抽象基类" class="headerlink" title="1、FileSystem：文件系统的抽象基类"></a>1、FileSystem：文件系统的抽象基类</h2><ul>
+<li>FileSystem的实现取决于fs.defaultFS的配置！<ul>
+<li>有两种配置方式：<ul>
+<li>LocalFileSystem：本地文件系统–》fs.defaultFS=file:///</li>
+<li>DistributedFileSystem：分布式文件系统–》fs.defaultFS=hdfs://xxx:9000</li>
+</ul>
+</li>
+<li>声明用户身份：<ul>
+<li>FileSystem fs = FileSystem.get(new URI(“hdfs://hp1:9000”), conf, “hjc”);</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2、Configuration：功能是读取配置文件中的参数信息"><a href="#2、Configuration：功能是读取配置文件中的参数信息" class="headerlink" title="2、Configuration：功能是读取配置文件中的参数信息"></a>2、Configuration：功能是读取配置文件中的参数信息</h2><ul>
+<li>Configuration在读取配置文件的参数是，根据文件名，从类路径按照顺序读取配置文件。先读取 xxx.default.xml，再读取xxx-site.xml</li>
+<li>Configuration类一加载，就会默认读取8个配置文件，将这8个配置文件中的所有参数，读取到一个Map集合中。</li>
+<li>同时，Configuration也提供了set(name, value)，来手动设置用户自定义的参数。</li>
+</ul>
+<h2 id="3、FileStatus：代表一个文件的状态（文件的属性信息）"><a href="#3、FileStatus：代表一个文件的状态（文件的属性信息）" class="headerlink" title="3、FileStatus：代表一个文件的状态（文件的属性信息）"></a>3、FileStatus：代表一个文件的状态（文件的属性信息）</h2><h2 id="4、offset和length"><a href="#4、offset和length" class="headerlink" title="4、offset和length"></a>4、offset和length</h2><ul>
+<li>offset是偏移量：指块在文件中的起始位置</li>
+<li>length是文件的长度：指块大小</li>
+</ul>
+<h2 id="5、LocatedFileStatus：是FileStatus的子类，除了文件的属性，还有块的位置信息。"><a href="#5、LocatedFileStatus：是FileStatus的子类，除了文件的属性，还有块的位置信息。" class="headerlink" title="5、LocatedFileStatus：是FileStatus的子类，除了文件的属性，还有块的位置信息。"></a>5、LocatedFileStatus：是FileStatus的子类，除了文件的属性，还有块的位置信息。</h2><hr>
+<h1 id="2、具体代码展示"><a href="#2、具体代码展示" class="headerlink" title="2、具体代码展示"></a>2、具体代码展示</h1><h2 id="常用API的实现"><a href="#常用API的实现" class="headerlink" title="常用API的实现"></a><strong>常用API的实现</strong></h2><figure class="highlight java"><figcaption><span>&#123;.line-numbers&#125;</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestHDFS</span> </span>&#123;	</span><br><span class="line">	<span class="keyword">private</span> FileSystem fs;	</span><br><span class="line">	<span class="keyword">private</span> Configuration conf = <span class="keyword">new</span> Configuration();	</span><br><span class="line">	<span class="meta">@Before</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> IOException, URISyntaxException </span>&#123;		</span><br><span class="line">		<span class="comment">//创建一个客户端对象</span></span><br><span class="line">		 fs=FileSystem.get(<span class="keyword">new</span> URI(<span class="string">&quot;hdfs://hadoop101:9000&quot;</span>),conf);		</span><br><span class="line">	&#125;	</span><br><span class="line">	<span class="meta">@After</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;		</span><br><span class="line">		<span class="keyword">if</span> (fs !=<span class="keyword">null</span>) &#123;</span><br><span class="line">			fs.close();</span><br><span class="line">		&#125;		</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//  hadoop fs(运行一个通用的用户客户端)   -mkdir /xxx</span></span><br><span class="line">	<span class="comment">//  创建一个客户端对象 ，调用创建目录的方法，路径作为方法的参数掺入</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMkdir</span><span class="params">()</span> <span class="keyword">throws</span> IOException, InterruptedException, URISyntaxException </span>&#123;	</span><br><span class="line">		fs.mkdirs(<span class="keyword">new</span> Path(<span class="string">&quot;/eclipse2&quot;</span>));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 上传文件： hadoop fs -put 本地文件  hdfs</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testUpload</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;	</span><br><span class="line">		fs.copyFromLocalFile(<span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">new</span> Path(<span class="string">&quot;e:/sts.zip&quot;</span>), <span class="keyword">new</span> Path(<span class="string">&quot;/&quot;</span>));	</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 下载文件：  hadoop fs -get hdfs  本地路径</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testDownload</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		fs.copyToLocalFile(<span class="keyword">false</span>, <span class="keyword">new</span> Path(<span class="string">&quot;/wcinput&quot;</span>), <span class="keyword">new</span> Path(<span class="string">&quot;e:/&quot;</span>), <span class="keyword">true</span>);</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 删除文件：  hadoop fs -rm -r -f  路径</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testDelete</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		fs.delete(<span class="keyword">new</span> Path(<span class="string">&quot;/eclipse&quot;</span>), <span class="keyword">true</span>);	</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 重命名：  hadoop fs -mv  源文件   目标文件</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testRename</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		fs.rename(<span class="keyword">new</span> Path(<span class="string">&quot;/eclipse1&quot;</span>), <span class="keyword">new</span> Path(<span class="string">&quot;/eclipsedir&quot;</span>));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 判断当前路径是否存在</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testIfPathExsits</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;	</span><br><span class="line">		System.out.println(fs.exists(<span class="keyword">new</span> Path(<span class="string">&quot;/eclipsedir1&quot;</span>)));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 判断当前路径是目录还是文件</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testFileIsDir</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;	</span><br><span class="line">		<span class="comment">//Path path = new Path(&quot;/eclipsedir&quot;);</span></span><br><span class="line">		Path path = <span class="keyword">new</span> Path(<span class="string">&quot;/wcoutput1&quot;</span>);	</span><br><span class="line">		<span class="comment">// 不建议使用此方法，建议好似用Instead reuse the FileStatus returned </span></span><br><span class="line">		<span class="comment">//by getFileStatus() or listStatus() methods.</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/*	System.out.println(fs.isDirectory(path));</span></span><br><span class="line"><span class="comment">		System.out.println(fs.isFile(path));*/</span></span><br><span class="line">		<span class="comment">//FileStatus fileStatus = fs.getFileStatus(path);</span></span><br><span class="line">		FileStatus[] listStatus = fs.listStatus(path);</span><br><span class="line">		<span class="keyword">for</span> (FileStatus fileStatus : listStatus) &#123;	</span><br><span class="line">			<span class="comment">//获取文件名 Path是完整的路径 协议+文件名</span></span><br><span class="line">			Path filePath = fileStatus.getPath();</span><br><span class="line">			System.out.println(filePath.getName()+<span class="string">&quot;是否是目录：&quot;</span>+fileStatus.isDirectory());</span><br><span class="line">			System.out.println(filePath.getName()+<span class="string">&quot;是否是文件：&quot;</span>+fileStatus.isFile());</span><br><span class="line">		&#125;		</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 获取到文件的块信息</span></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGetBlockInfomation</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		Path path = <span class="keyword">new</span> Path(<span class="string">&quot;/sts.zip&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		RemoteIterator&lt;LocatedFileStatus&gt; status = fs.listLocatedStatus(path);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">while</span>(status.hasNext()) &#123;</span><br><span class="line">			</span><br><span class="line">			LocatedFileStatus locatedFileStatus = status.next();</span><br><span class="line">			</span><br><span class="line">			System.out.println(<span class="string">&quot;Ownner:&quot;</span>+locatedFileStatus.getOwner());</span><br><span class="line">			System.out.println(<span class="string">&quot;Group:&quot;</span>+locatedFileStatus.getGroup());</span><br><span class="line">			</span><br><span class="line">			<span class="comment">//---------------块的位置信息--------------------</span></span><br><span class="line">			BlockLocation[] blockLocations = locatedFileStatus.getBlockLocations();</span><br><span class="line">			</span><br><span class="line">			<span class="keyword">for</span> (BlockLocation blockLocation : blockLocations) &#123;</span><br><span class="line">				System.out.println(blockLocation);</span><br><span class="line">				System.out.println(<span class="string">&quot;------------------------&quot;</span>);	</span><br><span class="line">			&#125;	</span><br><span class="line">		&#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<hr>
+<h2 id="自定义上传下载文件"><a href="#自定义上传下载文件" class="headerlink" title="自定义上传下载文件"></a><strong>自定义上传下载文件</strong></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 1. 上传文件时，只上传这个文件的一部分</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * 2. 下载文件时，如何只下载这个文件的某一个块？ </span></span><br><span class="line"><span class="comment"> * 			或只下载文件的某一部分？</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestCustomUploadAndDownload</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">private</span> FileSystem fs;</span><br><span class="line">   <span class="keyword">private</span> FileSystem localFs;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> Configuration conf = <span class="keyword">new</span> Configuration();</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Before</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> <span class="keyword">throws</span> IOException, URISyntaxException </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//创建一个客户端对象</span></span><br><span class="line">		 fs=FileSystem.get(<span class="keyword">new</span> URI(<span class="string">&quot;hdfs://hadoop101:9000&quot;</span>),conf);</span><br><span class="line">		 </span><br><span class="line">		 localFs=FileSystem.get(<span class="keyword">new</span> Configuration());</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@After</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (fs !=<span class="keyword">null</span>) &#123;</span><br><span class="line">			fs.close();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 只上传文件的前10M</span></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * 官方的实现</span></span><br><span class="line"><span class="comment">	 * InputStream in=null;</span></span><br><span class="line"><span class="comment">      OutputStream out = null;</span></span><br><span class="line"><span class="comment">      try &#123;</span></span><br><span class="line"><span class="comment">        in = srcFS.open(src);</span></span><br><span class="line"><span class="comment">        out = dstFS.create(dst, overwrite);</span></span><br><span class="line"><span class="comment">        IOUtils.copyBytes(in, out, conf, true);</span></span><br><span class="line"><span class="comment">      &#125; catch (IOException e) &#123;</span></span><br><span class="line"><span class="comment">        IOUtils.closeStream(out);</span></span><br><span class="line"><span class="comment">        IOUtils.closeStream(in);</span></span><br><span class="line"><span class="comment">        throw e;</span></span><br><span class="line"><span class="comment">      &#125;</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testCustomUpload</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//提供两个Path，和两个FileSystem</span></span><br><span class="line">		Path src=<span class="keyword">new</span> Path(<span class="string">&quot;e:/悲惨世界(英文版).txt&quot;</span>);</span><br><span class="line">		Path dest=<span class="keyword">new</span> Path(<span class="string">&quot;/悲惨世界(英文版)10M.txt&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 使用本地文件系统中获取的输入流读取本地文件</span></span><br><span class="line">		FSDataInputStream is = localFs.open(src);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 使用HDFS的分布式文件系统中获取的输出流，向dest路径写入数据</span></span><br><span class="line">		FSDataOutputStream os = fs.create(dest, <span class="keyword">true</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 1k</span></span><br><span class="line">		<span class="keyword">byte</span> [] buffer=<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 流中数据的拷贝</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1024</span> * <span class="number">10</span>; i++) &#123;</span><br><span class="line">			</span><br><span class="line">			is.read(buffer);</span><br><span class="line">			os.write(buffer);</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//关流</span></span><br><span class="line">		 IOUtils.closeStream(is);</span><br><span class="line">	     IOUtils.closeStream(os);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testFirstBlock</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">//提供两个Path，和两个FileSystem</span></span><br><span class="line">		Path src=<span class="keyword">new</span> Path(<span class="string">&quot;/sts.zip&quot;</span>);</span><br><span class="line">		Path dest=<span class="keyword">new</span> Path(<span class="string">&quot;e:/firstblock&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 使用HDFS的分布式文件系统中获取的输入流，读取HDFS上指定路径的数据</span></span><br><span class="line">		FSDataInputStream is = fs.open(src);</span><br><span class="line">		<span class="comment">// 使用本地文件系统中获取的输出流写入本地文件</span></span><br><span class="line">		FSDataOutputStream os = localFs.create(dest, <span class="keyword">true</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 1k</span></span><br><span class="line">		<span class="keyword">byte</span> [] buffer=<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">				</span><br><span class="line">		<span class="comment">// 流中数据的拷贝</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1024</span> * <span class="number">128</span>; i++) &#123;</span><br><span class="line">					</span><br><span class="line">			is.read(buffer);</span><br><span class="line">			os.write(buffer);</span><br><span class="line">					</span><br><span class="line">		&#125;		</span><br><span class="line">		<span class="comment">//关流</span></span><br><span class="line">		IOUtils.closeStream(is);</span><br><span class="line">		IOUtils.closeStream(os);</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSecondBlock</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">//提供两个Path，和两个FileSystem</span></span><br><span class="line">		Path src=<span class="keyword">new</span> Path(<span class="string">&quot;/sts.zip&quot;</span>);</span><br><span class="line">		<span class="comment">//Path dest=new Path(&quot;e:/secondblock&quot;);</span></span><br><span class="line">		Path dest=<span class="keyword">new</span> Path(<span class="string">&quot;e:/thirdblock&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 使用HDFS的分布式文件系统中获取的输入流，读取HDFS上指定路径的数据</span></span><br><span class="line">		FSDataInputStream is = fs.open(src);</span><br><span class="line">		<span class="comment">// 使用本地文件系统中获取的输出流写入本地文件</span></span><br><span class="line">		FSDataOutputStream os = localFs.create(dest, <span class="keyword">true</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//定位到流的指定位置</span></span><br><span class="line">		is.seek(<span class="number">1024</span>*<span class="number">1024</span>*<span class="number">128</span>*<span class="number">2</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 1k</span></span><br><span class="line">		<span class="keyword">byte</span> [] buffer=<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">				</span><br><span class="line">		<span class="comment">// 流中数据的拷贝</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1024</span> * <span class="number">128</span>; i++) &#123;</span><br><span class="line">					</span><br><span class="line">			is.read(buffer);</span><br><span class="line">			os.write(buffer);</span><br><span class="line">					</span><br><span class="line">		&#125;				</span><br><span class="line">		<span class="comment">//关流</span></span><br><span class="line">		IOUtils.closeStream(is);</span><br><span class="line">		IOUtils.closeStream(os);		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testFinalBlock</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">//提供两个Path，和两个FileSystem</span></span><br><span class="line">		Path src=<span class="keyword">new</span> Path(<span class="string">&quot;/sts.zip&quot;</span>);</span><br><span class="line">		<span class="comment">//Path dest=new Path(&quot;e:/secondblock&quot;);</span></span><br><span class="line">		Path dest=<span class="keyword">new</span> Path(<span class="string">&quot;e:/fourthblock&quot;</span>);		</span><br><span class="line">		<span class="comment">// 使用HDFS的分布式文件系统中获取的输入流，读取HDFS上指定路径的数据</span></span><br><span class="line">		FSDataInputStream is = fs.open(src);</span><br><span class="line">		<span class="comment">// 使用本地文件系统中获取的输出流写入本地文件</span></span><br><span class="line">		FSDataOutputStream os = localFs.create(dest, <span class="keyword">true</span>);		</span><br><span class="line">		<span class="comment">//定位到流的指定位置</span></span><br><span class="line">		is.seek(<span class="number">1024</span>*<span class="number">1024</span>*<span class="number">128</span>*<span class="number">3</span>);</span><br><span class="line">		<span class="comment">//buffSize 默认不能超过4096</span></span><br><span class="line">		IOUtils.copyBytes(is, os, <span class="number">4096</span>, <span class="keyword">true</span>);		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
                 
             </div>
@@ -498,7 +535,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="/about" rel="external nofollow noreferrer">hjc</a>
+                    <a href="/about" rel="external nofollow noreferrer">惠俊程</a>
                 </span>
             </div>
             <div class="reprint__type">
@@ -508,7 +545,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/03/31/hello-world/">http://example.com/2021/03/31/hello-world/</a>
+                    <a href="http://example.com/2021/04/26/Java%E5%B8%B8%E7%94%A8API%E6%93%8D%E4%BD%9CHDFS/">http://example.com/2021/04/26/Java%E5%B8%B8%E7%94%A8API%E6%93%8D%E4%BD%9CHDFS/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -521,7 +558,7 @@
                     本博客所有文章除特別声明外，均采用
                     <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
                     许可协议。转载请注明来源
-                    <a href="/about" target="_blank">hjc</a>
+                    <a href="/about" target="_blank">惠俊程</a>
                     !
                 </span>
             </div>
@@ -545,7 +582,19 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/Java/">
+                                    <span class="chip bg-color">Java</span>
+                                </a>
+                            
+                                <a href="/tags/HDFS/">
+                                    <span class="chip bg-color">HDFS</span>
+                                </a>
+                            
+                                <a href="/tags/Hadoop/">
+                                    <span class="chip bg-color">Hadoop</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -735,9 +784,10 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2021/04/26/Java%E5%B8%B8%E7%94%A8API%E6%93%8D%E4%BD%9CHDFS/">
                     <div class="card-image">
@@ -754,9 +804,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-04-26
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-04-26
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -769,6 +819,7 @@
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -792,7 +843,7 @@
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
                 <a href="/2021/03/31/hello-world/">
@@ -822,7 +873,6 @@
                         </span>
                     </div>
                 </div>
-
                 
             </div>
         </div>
