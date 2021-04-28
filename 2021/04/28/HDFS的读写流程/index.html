@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Hello World, 絵空事">
+    <meta name="keywords" content="HDFS的读写流程, 絵空事">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>Hello World | 絵空事</title>
+    <title>HDFS的读写流程 | 絵空事</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -310,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">Hello World</h1>
+                    <h1 class="description center-align post-title">HDFS的读写流程</h1>
                 </div>
             </div>
         </div>
@@ -429,12 +429,29 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/HDFS/">
+                                <span class="chip bg-color">HDFS</span>
+                            </a>
+                        
+                            <a href="/tags/Hadoop/">
+                                <span class="chip bg-color">Hadoop</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Hadoop/" class="post-category">
+                                Hadoop
+                            </a>
+                        
+                    </div>
                     
                 </div>
             </div>
@@ -443,7 +460,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-03-31
+                    2021-04-28
                 </div>
                 
 
@@ -452,7 +469,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    75
+                    779
                 </div>
                 
 
@@ -469,19 +486,20 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+                <h1 id="一、HDFS的写数据流程"><a href="#一、HDFS的写数据流程" class="headerlink" title="一、HDFS的写数据流程"></a>一、HDFS的写数据流程</h1><hr>
+<h2 id="1、服务端启动HDFS中的NameNode-NN-和DataNode-DN-进程"><a href="#1、服务端启动HDFS中的NameNode-NN-和DataNode-DN-进程" class="headerlink" title="1、服务端启动HDFS中的NameNode(NN)和DataNode(DN)进程"></a>1、服务端启动HDFS中的NameNode(NN)和DataNode(DN)进程</h2><h2 id="2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。"><a href="#2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。" class="headerlink" title="2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。"></a>2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。</h2><h2 id="3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。"><a href="#3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。" class="headerlink" title="3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。"></a>3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。</h2><h2 id="4、若检查通过，NN响应客户端，可以上传文件"><a href="#4、若检查通过，NN响应客户端，可以上传文件" class="headerlink" title="4、若检查通过，NN响应客户端，可以上传文件"></a>4、若检查通过，NN响应客户端，可以上传文件</h2><h2 id="5、客户端根据设置的块-Block-大小开始上传第一个块。"><a href="#5、客户端根据设置的块-Block-大小开始上传第一个块。" class="headerlink" title="5、客户端根据设置的块(Block)大小开始上传第一个块。"></a>5、客户端根据设置的块(Block)大小开始上传第一个块。</h2><ul>
+<li>NN根据客户端上传文件的副本数量，通过机架感应策略选取指定数量的DN节点返回给客户端，用来存储上传的文件<h2 id="6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的-距离当前DN节点最近的节点-下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。"><a href="#6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的-距离当前DN节点最近的节点-下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。" class="headerlink" title="6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的(距离当前DN节点最近的节点)下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。"></a>6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的(距离当前DN节点最近的节点)下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。</h2><h2 id="7、客户端每读取64K的数据，封装成一个packet-数据包，文件传输的基本单位-，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。"><a href="#7、客户端每读取64K的数据，封装成一个packet-数据包，文件传输的基本单位-，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。" class="headerlink" title="7、客户端每读取64K的数据，封装成一个packet(数据包，文件传输的基本单位)，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。"></a>7、客户端每读取64K的数据，封装成一个packet(数据包，文件传输的基本单位)，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。</h2></li>
+<li>每个packet由若干chunk(小块)组成，一个小块由512B的数据和4B的校验和组成<h2 id="8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块"><a href="#8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块" class="headerlink" title="8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块"></a>8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块</h2><h2 id="9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。"><a href="#9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。" class="headerlink" title="9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。"></a>9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。</h2></li>
+</ul>
+<hr>
+<h1 id="二、异常的写流程"><a href="#二、异常的写流程" class="headerlink" title="二、异常的写流程"></a>二、异常的写流程</h1><hr>
+<h2 id="前六个步骤同正常的写数据流程"><a href="#前六个步骤同正常的写数据流程" class="headerlink" title="前六个步骤同正常的写数据流程"></a>前六个步骤同正常的写数据流程</h2><h2 id="7-、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene-待发送-的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene-正在发送队列-，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中"><a href="#7-、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene-待发送-的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene-正在发送队列-，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中" class="headerlink" title="7 、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene(待发送)的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene(正在发送队列)，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中"></a>7 、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene(待发送)的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene(正在发送队列)，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。<strong>如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中</strong></h2><h2 id="8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。"><a href="#8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。" class="headerlink" title="8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。"></a>8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。</h2><ul>
+<li>只要有一个DN节点接收到了数据，并上报NN节点已经完成接收此数据块，NN就会认为当前块已经传输成功。<strong>NN会自动维护设定的文件副本数量</strong></li>
+</ul>
+<hr>
+<h1 id="三、机架感知策略"><a href="#三、机架感知策略" class="headerlink" title="三、机架感知策略"></a>三、机架感知策略</h1><h2 id="1、网络拓扑-节点距离计算"><a href="#1、网络拓扑-节点距离计算" class="headerlink" title="1、网络拓扑-节点距离计算"></a>1、网络拓扑-节点距离计算</h2><h3 id="节点距离：两个节点到达最近的共同祖先的距离总和"><a href="#节点距离：两个节点到达最近的共同祖先的距离总和" class="headerlink" title="节点距离：两个节点到达最近的共同祖先的距离总和"></a>节点距离：两个节点到达最近的共同祖先的距离总和</h3><ul>
+<li>是一种抽象距离<h2 id="2、机架感知"><a href="#2、机架感知" class="headerlink" title="2、机架感知"></a>2、机架感知</h2><h3 id="待续，日后更新"><a href="#待续，日后更新" class="headerlink" title="待续，日后更新"></a>待续，日后更新</h3></li>
+</ul>
 
                 
             </div>
@@ -498,7 +516,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="/about" rel="external nofollow noreferrer">hjc</a>
+                    <a href="/about" rel="external nofollow noreferrer">惠俊程</a>
                 </span>
             </div>
             <div class="reprint__type">
@@ -508,7 +526,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/03/31/hello-world/">http://example.com/2021/03/31/hello-world/</a>
+                    <a href="http://example.com/2021/04/28/HDFS%E7%9A%84%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B/">http://example.com/2021/04/28/HDFS%E7%9A%84%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -521,7 +539,7 @@
                     本博客所有文章除特別声明外，均采用
                     <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
                     许可协议。转载请注明来源
-                    <a href="/about" target="_blank">hjc</a>
+                    <a href="/about" target="_blank">惠俊程</a>
                     !
                 </span>
             </div>
@@ -545,7 +563,15 @@
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
+                            
+                                <a href="/tags/HDFS/">
+                                    <span class="chip bg-color">HDFS</span>
+                                </a>
+                            
+                                <a href="/tags/Hadoop/">
+                                    <span class="chip bg-color">Hadoop</span>
+                                </a>
+                            
                         </div>
                     
                 </div>
@@ -735,9 +761,64 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2021/04/28/HDFS%E7%9A%84%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="HDFS的读写流程">
+                        
+                        <span class="card-title">HDFS的读写流程</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-04-28
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Hadoop/" class="post-category">
+                                    Hadoop
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/HDFS/">
+                        <span class="chip bg-color">HDFS</span>
+                    </a>
+                    
+                    <a href="/tags/Hadoop/">
+                        <span class="chip bg-color">Hadoop</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2021/04/26/Java%E5%B8%B8%E7%94%A8API%E6%93%8D%E4%BD%9CHDFS/">
                     <div class="card-image">
@@ -754,9 +835,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-04-26
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-04-26
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -785,44 +866,6 @@
                     </a>
                     
                 </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="far fa-dot-circle"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/03/31/hello-world/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
-                        
-                        <span class="card-title">Hello World</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-03-31
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            hjc
-                            
-                        </span>
-                    </div>
-                </div>
-
                 
             </div>
         </div>
