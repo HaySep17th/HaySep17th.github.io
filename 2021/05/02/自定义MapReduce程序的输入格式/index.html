@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="HDFS的读写流程, 絵空事">
+    <meta name="keywords" content="自定义MapReduce程序的输入格式, 絵空事">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>HDFS的读写流程 | 絵空事</title>
+    <title>自定义MapReduce程序的输入格式 | 絵空事</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -310,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">HDFS的读写流程</h1>
+                    <h1 class="description center-align post-title">自定义MapReduce程序的输入格式</h1>
                 </div>
             </div>
         </div>
@@ -431,12 +431,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/HDFS/">
-                                <span class="chip bg-color">HDFS</span>
-                            </a>
-                        
                             <a href="/tags/Hadoop/">
                                 <span class="chip bg-color">Hadoop</span>
+                            </a>
+                        
+                            <a href="/tags/Java/">
+                                <span class="chip bg-color">Java</span>
                             </a>
                         
                     </div>
@@ -447,8 +447,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/Hadoop/" class="post-category">
-                                Hadoop
+                            <a href="/categories/MapReduce/" class="post-category">
+                                MapReduce
                             </a>
                         
                     </div>
@@ -460,7 +460,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-04-28
+                    2021-05-02
                 </div>
                 
 
@@ -469,7 +469,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    779
+                    512
                 </div>
                 
 
@@ -486,20 +486,12 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="一、HDFS的写数据流程"><a href="#一、HDFS的写数据流程" class="headerlink" title="一、HDFS的写数据流程"></a>一、HDFS的写数据流程</h1><hr>
-<h2 id="1、服务端启动HDFS中的NameNode-NN-和DataNode-DN-进程"><a href="#1、服务端启动HDFS中的NameNode-NN-和DataNode-DN-进程" class="headerlink" title="1、服务端启动HDFS中的NameNode(NN)和DataNode(DN)进程"></a>1、服务端启动HDFS中的NameNode(NN)和DataNode(DN)进程</h2><h2 id="2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。"><a href="#2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。" class="headerlink" title="2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。"></a>2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。</h2><h2 id="3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。"><a href="#3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。" class="headerlink" title="3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。"></a>3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。</h2><h2 id="4、若检查通过，NN响应客户端，可以上传文件"><a href="#4、若检查通过，NN响应客户端，可以上传文件" class="headerlink" title="4、若检查通过，NN响应客户端，可以上传文件"></a>4、若检查通过，NN响应客户端，可以上传文件</h2><h2 id="5、客户端根据设置的块-Block-大小开始上传第一个块。"><a href="#5、客户端根据设置的块-Block-大小开始上传第一个块。" class="headerlink" title="5、客户端根据设置的块(Block)大小开始上传第一个块。"></a>5、客户端根据设置的块(Block)大小开始上传第一个块。</h2><ul>
-<li>NN根据客户端上传文件的副本数量，通过机架感应策略选取指定数量的DN节点返回给客户端，用来存储上传的文件<h2 id="6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的-距离当前DN节点最近的节点-下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。"><a href="#6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的-距离当前DN节点最近的节点-下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。" class="headerlink" title="6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的(距离当前DN节点最近的节点)下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。"></a>6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的(距离当前DN节点最近的节点)下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。</h2><h2 id="7、客户端每读取64K的数据，封装成一个packet-数据包，文件传输的基本单位-，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。"><a href="#7、客户端每读取64K的数据，封装成一个packet-数据包，文件传输的基本单位-，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。" class="headerlink" title="7、客户端每读取64K的数据，封装成一个packet(数据包，文件传输的基本单位)，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。"></a>7、客户端每读取64K的数据，封装成一个packet(数据包，文件传输的基本单位)，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。</h2></li>
-<li>每个packet由若干chunk(小块)组成，一个小块由512B的数据和4B的校验和组成<h2 id="8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块"><a href="#8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块" class="headerlink" title="8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块"></a>8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块</h2><h2 id="9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。"><a href="#9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。" class="headerlink" title="9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。"></a>9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。</h2></li>
-</ul>
+                <p>自定义InputFormat类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 1. 改变切片策略，一个文件固定切1片，通过指定文件不可切</span></span><br><span class="line"><span class="comment"> * 2. 提供RR ，这个RR读取切片的文件名作为key,读取切片的内容封装到bytes作为value</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyInputFormat</span> <span class="keyword">extends</span> <span class="title">FileInputFormat</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> RecordReader <span class="title">createRecordReader</span><span class="params">(InputSplit split, TaskAttemptContext context)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> MyRecordReader();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 重写isSplitable</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">isSplitable</span><span class="params">(JobContext context, Path filename)</span> </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>自定义RecordReader类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * RecordReader从MapTask处理的当前切片中读取数据</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * XXXContext都是Job的上下文，通过XXXContext可以获取Job的配置Configuration对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRecordReader</span> <span class="keyword">extends</span> <span class="title">RecordReader</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> Text key;</span><br><span class="line">	<span class="keyword">private</span> BytesWritable value;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String filename;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> length;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> FileSystem fs;</span><br><span class="line">	<span class="keyword">private</span> Path path;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> FSDataInputStream is;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> flag=<span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// MyRecordReader在创建后，在进入Mapper的run()之前，自动调用</span></span><br><span class="line">	<span class="comment">// 文件的所有内容设置为1个切片，切片的长度等于文件的长度</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(InputSplit split, TaskAttemptContext context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">		FileSplit fileSplit=(FileSplit) split;</span><br><span class="line">		</span><br><span class="line">		filename=fileSplit.getPath().getName();</span><br><span class="line">		</span><br><span class="line">		length=(<span class="keyword">int</span>) fileSplit.getLength();</span><br><span class="line">		</span><br><span class="line">		path=fileSplit.getPath();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//获取当前Job的配置对象</span></span><br><span class="line">		Configuration conf = context.getConfiguration();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//获取当前Job使用的文件系统</span></span><br><span class="line">		fs=FileSystem.get(conf);</span><br><span class="line">		</span><br><span class="line">		 is = fs.open(path);</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 读取一组输入的key-value，读到返回true,否则返回false</span></span><br><span class="line">	<span class="comment">// 将文件的名称封装为key，将文件的内容封装为BytesWritable类型的value，返回true</span></span><br><span class="line">	<span class="comment">// 第二次调用nextKeyValue()返回false</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">nextKeyValue</span><span class="params">()</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (flag) &#123;</span><br><span class="line">			</span><br><span class="line">			<span class="comment">//实例化对象</span></span><br><span class="line">			<span class="keyword">if</span> (key==<span class="keyword">null</span>) &#123;</span><br><span class="line">				key=<span class="keyword">new</span> Text();</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			<span class="keyword">if</span> (value==<span class="keyword">null</span>) &#123;</span><br><span class="line">				value=<span class="keyword">new</span> BytesWritable();</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			<span class="comment">//赋值</span></span><br><span class="line">			<span class="comment">//将文件名封装到key中</span></span><br><span class="line">			key.set(filename);</span><br><span class="line">			</span><br><span class="line">			<span class="comment">// 将文件的内容读取到BytesWritable中</span></span><br><span class="line">			<span class="keyword">byte</span> [] content=<span class="keyword">new</span> <span class="keyword">byte</span>[length];</span><br><span class="line">			</span><br><span class="line">			IOUtils.readFully(is, content, <span class="number">0</span>, length);</span><br><span class="line">			</span><br><span class="line">			value.set(content, <span class="number">0</span>, length);</span><br><span class="line">			</span><br><span class="line">			flag=<span class="keyword">false</span>;</span><br><span class="line">			</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//返回当前读取到的key-value中的key</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Object <span class="title">getCurrentKey</span><span class="params">()</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> key;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//返回当前读取到的key-value中的value</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Object <span class="title">getCurrentValue</span><span class="params">()</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> value;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//返回读取切片的进度</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">getProgress</span><span class="params">()</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 在Mapper的输入关闭时调用，清理工作</span></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (is != <span class="keyword">null</span>) &#123;</span><br><span class="line">			IOUtils.closeStream(is);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span> (fs !=<span class="keyword">null</span>) &#123;</span><br><span class="line">			fs.close();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <hr>
-<h1 id="二、异常的写流程"><a href="#二、异常的写流程" class="headerlink" title="二、异常的写流程"></a>二、异常的写流程</h1><hr>
-<h2 id="前六个步骤同正常的写数据流程"><a href="#前六个步骤同正常的写数据流程" class="headerlink" title="前六个步骤同正常的写数据流程"></a>前六个步骤同正常的写数据流程</h2><h2 id="7-、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene-待发送-的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene-正在发送队列-，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中"><a href="#7-、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene-待发送-的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene-正在发送队列-，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中" class="headerlink" title="7 、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene(待发送)的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene(正在发送队列)，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中"></a>7 、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene(待发送)的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene(正在发送队列)，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。<strong>如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中</strong></h2><h2 id="8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。"><a href="#8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。" class="headerlink" title="8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。"></a>8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。</h2><ul>
-<li>只要有一个DN节点接收到了数据，并上报NN节点已经完成接收此数据块，NN就会认为当前块已经传输成功。<strong>NN会自动维护设定的文件副本数量</strong></li>
-</ul>
-<hr>
-<h1 id="三、机架感知策略"><a href="#三、机架感知策略" class="headerlink" title="三、机架感知策略"></a>三、机架感知策略</h1><h2 id="1、网络拓扑-节点距离计算"><a href="#1、网络拓扑-节点距离计算" class="headerlink" title="1、网络拓扑-节点距离计算"></a>1、网络拓扑-节点距离计算</h2><h3 id="节点距离：两个节点到达最近的共同祖先的距离总和"><a href="#节点距离：两个节点到达最近的共同祖先的距离总和" class="headerlink" title="节点距离：两个节点到达最近的共同祖先的距离总和"></a>节点距离：两个节点到达最近的共同祖先的距离总和</h3><ul>
-<li>是一种抽象距离<h2 id="2、机架感知"><a href="#2、机架感知" class="headerlink" title="2、机架感知"></a>2、机架感知</h2><h3 id="待续，日后更新"><a href="#待续，日后更新" class="headerlink" title="待续，日后更新"></a>待续，日后更新</h3></li>
-</ul>
 
                 
             </div>
@@ -516,7 +508,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="/about" rel="external nofollow noreferrer">惠俊程</a>
+                    <a href="/about" rel="external nofollow noreferrer">hjc</a>
                 </span>
             </div>
             <div class="reprint__type">
@@ -526,7 +518,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/04/28/HDFS%E7%9A%84%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B/">http://example.com/2021/04/28/HDFS%E7%9A%84%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B/</a>
+                    <a href="http://example.com/2021/05/02/%E8%87%AA%E5%AE%9A%E4%B9%89MapReduce%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BE%93%E5%85%A5%E6%A0%BC%E5%BC%8F/">http://example.com/2021/05/02/%E8%87%AA%E5%AE%9A%E4%B9%89MapReduce%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BE%93%E5%85%A5%E6%A0%BC%E5%BC%8F/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -539,7 +531,7 @@
                     本博客所有文章除特別声明外，均采用
                     <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
                     许可协议。转载请注明来源
-                    <a href="/about" target="_blank">惠俊程</a>
+                    <a href="/about" target="_blank">hjc</a>
                     !
                 </span>
             </div>
@@ -564,12 +556,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/HDFS/">
-                                    <span class="chip bg-color">HDFS</span>
-                                </a>
-                            
                                 <a href="/tags/Hadoop/">
                                     <span class="chip bg-color">Hadoop</span>
+                                </a>
+                            
+                                <a href="/tags/Java/">
+                                    <span class="chip bg-color">Java</span>
                                 </a>
                             
                         </div>
@@ -761,17 +753,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2021/05/01/Mapreduce%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3/">
+                <a href="/2021/05/02/%E8%87%AA%E5%AE%9A%E4%B9%89MapReduce%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BE%93%E5%85%A5%E6%A0%BC%E5%BC%8F/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Mapreduce核心编程思想">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="自定义MapReduce程序的输入格式">
                         
-                        <span class="card-title">Mapreduce核心编程思想</span>
+                        <span class="card-title">自定义MapReduce程序的输入格式</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -781,26 +774,31 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-05-01
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-05-02
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Hadoop/" class="post-category">
-                                    Hadoop
+                            <a href="/categories/MapReduce/" class="post-category">
+                                    MapReduce
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Mapreduce/">
-                        <span class="chip bg-color">Mapreduce</span>
+                    <a href="/tags/Hadoop/">
+                        <span class="chip bg-color">Hadoop</span>
+                    </a>
+                    
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
                     </a>
                     
                 </div>
@@ -814,12 +812,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2021/04/26/Java%E5%B8%B8%E7%94%A8API%E6%93%8D%E4%BD%9CHDFS/">
+                <a href="/2021/05/02/MapReduce%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B%E4%B8%ADJob%E6%8F%90%E4%BA%A4%E7%9A%84%E6%B5%81%E7%A8%8B/">
                     <div class="card-image">
                         
-                        <img src="/source/images/1.png" class="responsive-img" alt="Java常用API操作HDFS">
                         
-                        <span class="card-title">Java常用API操作HDFS</span>
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="MapReduce程序运行流程中Job提交的流程">
+                        
+                        <span class="card-title">MapReduce程序运行流程中Job提交的流程</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -830,14 +829,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-04-26
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-05-02
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Hadoop/" class="post-category">
-                                    Hadoop
+                            <a href="/categories/MapReduce/" class="post-category">
+                                    MapReduce
                                 </a>
                             
                             
@@ -847,16 +846,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/HDFS/">
-                        <span class="chip bg-color">HDFS</span>
-                    </a>
-                    
                     <a href="/tags/Hadoop/">
                         <span class="chip bg-color">Hadoop</span>
                     </a>
                     
-                    <a href="/tags/Java/">
-                        <span class="chip bg-color">Java</span>
+                    <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+                        <span class="chip bg-color">源码分析</span>
                     </a>
                     
                 </div>

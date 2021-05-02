@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="HDFS的读写流程, 絵空事">
+    <meta name="keywords" content="MapReduce程序运行流程中Job提交的流程, 絵空事">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>HDFS的读写流程 | 絵空事</title>
+    <title>MapReduce程序运行流程中Job提交的流程 | 絵空事</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -310,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">HDFS的读写流程</h1>
+                    <h1 class="description center-align post-title">MapReduce程序运行流程中Job提交的流程</h1>
                 </div>
             </div>
         </div>
@@ -431,12 +431,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/HDFS/">
-                                <span class="chip bg-color">HDFS</span>
-                            </a>
-                        
                             <a href="/tags/Hadoop/">
                                 <span class="chip bg-color">Hadoop</span>
+                            </a>
+                        
+                            <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+                                <span class="chip bg-color">源码分析</span>
                             </a>
                         
                     </div>
@@ -447,8 +447,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/Hadoop/" class="post-category">
-                                Hadoop
+                            <a href="/categories/MapReduce/" class="post-category">
+                                MapReduce
                             </a>
                         
                     </div>
@@ -460,7 +460,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-04-28
+                    2021-05-02
                 </div>
                 
 
@@ -469,7 +469,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    779
+                    2.1k
                 </div>
                 
 
@@ -486,20 +486,129 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="一、HDFS的写数据流程"><a href="#一、HDFS的写数据流程" class="headerlink" title="一、HDFS的写数据流程"></a>一、HDFS的写数据流程</h1><hr>
-<h2 id="1、服务端启动HDFS中的NameNode-NN-和DataNode-DN-进程"><a href="#1、服务端启动HDFS中的NameNode-NN-和DataNode-DN-进程" class="headerlink" title="1、服务端启动HDFS中的NameNode(NN)和DataNode(DN)进程"></a>1、服务端启动HDFS中的NameNode(NN)和DataNode(DN)进程</h2><h2 id="2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。"><a href="#2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。" class="headerlink" title="2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。"></a>2、客户端创建一个分布式文件系统的客户端，由该客户端向NN发送请求，请求上传文件。</h2><h2 id="3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。"><a href="#3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。" class="headerlink" title="3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。"></a>3、NN处理请求，检查客户端是否有上传文件的权限、上传路径是否合法等。</h2><h2 id="4、若检查通过，NN响应客户端，可以上传文件"><a href="#4、若检查通过，NN响应客户端，可以上传文件" class="headerlink" title="4、若检查通过，NN响应客户端，可以上传文件"></a>4、若检查通过，NN响应客户端，可以上传文件</h2><h2 id="5、客户端根据设置的块-Block-大小开始上传第一个块。"><a href="#5、客户端根据设置的块-Block-大小开始上传第一个块。" class="headerlink" title="5、客户端根据设置的块(Block)大小开始上传第一个块。"></a>5、客户端根据设置的块(Block)大小开始上传第一个块。</h2><ul>
-<li>NN根据客户端上传文件的副本数量，通过机架感应策略选取指定数量的DN节点返回给客户端，用来存储上传的文件<h2 id="6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的-距离当前DN节点最近的节点-下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。"><a href="#6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的-距离当前DN节点最近的节点-下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。" class="headerlink" title="6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的(距离当前DN节点最近的节点)下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。"></a>6、客户端根据返回的DN节点，请求与第一个DN节点建立传输通道，并由这个DN节点依次向通道中的(距离当前DN节点最近的节点)下一个节点发送建立传输通道的请求，各个节点发送响应，通道建立完毕。</h2><h2 id="7、客户端每读取64K的数据，封装成一个packet-数据包，文件传输的基本单位-，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。"><a href="#7、客户端每读取64K的数据，封装成一个packet-数据包，文件传输的基本单位-，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。" class="headerlink" title="7、客户端每读取64K的数据，封装成一个packet(数据包，文件传输的基本单位)，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。"></a>7、客户端每读取64K的数据，封装成一个packet(数据包，文件传输的基本单位)，并将packet发送到通道的下一个节点，通道中的节点在收取到packet之后，进行落盘存储，并进行检验，之后将该packet发送到通道的下一个节点。</h2></li>
-<li>每个packet由若干chunk(小块)组成，一个小块由512B的数据和4B的校验和组成<h2 id="8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块"><a href="#8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块" class="headerlink" title="8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块"></a>8、一个块的数据传输完成之后，通道关闭，DN向NN上报消息，已经接收到某个块</h2><h2 id="9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。"><a href="#9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。" class="headerlink" title="9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。"></a>9、第一个块传输完成，第二个块开始传输，依次重复5-8，直至最后一个块传输完成，NN向客户端响应传输完成，客户端关闭输出流。</h2></li>
+                <h1 id="一、切片"><a href="#一、切片" class="headerlink" title="一、切片"></a>一、切片</h1><h2 id="1、FileInputFormat的切片策略（默认）"><a href="#1、FileInputFormat的切片策略（默认）" class="headerlink" title="1、FileInputFormat的切片策略（默认）"></a>1、FileInputFormat的切片策略（默认）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;InputSplit&gt; <span class="title">getSplits</span><span class="params">(JobContext job)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">StopWatch sw = <span class="keyword">new</span> StopWatch().start();</span><br><span class="line"><span class="comment">// minSize从mapreduce.input.fileinputformat.split.minsize和1之间对比，取最大值</span></span><br><span class="line"><span class="keyword">long</span> minSize = Math.max(getFormatMinSplitSize(), getMinSplitSize(job));</span><br><span class="line"><span class="comment">// 读取mapreduce.input.fileinputformat.split.maxsize，如果没有设置使用Long.MaxValue作为默认值</span></span><br><span class="line">    <span class="keyword">long</span> maxSize = getMaxSplitSize(job);</span><br><span class="line"><span class="comment">// generate splits</span></span><br><span class="line">List&lt;InputSplit&gt; splits = <span class="keyword">new</span> ArrayList&lt;InputSplit&gt;();</span><br><span class="line"><span class="comment">// 获取当前Job输入目录中所有文件的状态(元数据)</span></span><br><span class="line">List&lt;FileStatus&gt; files = listStatus(job);</span><br><span class="line"><span class="comment">// 以文件为单位进行切片</span></span><br><span class="line">    <span class="keyword">for</span> (FileStatus file: files) &#123;</span><br><span class="line">      Path path = file.getPath();</span><br><span class="line">      <span class="keyword">long</span> length = file.getLen();</span><br><span class="line">      <span class="keyword">if</span> (length != <span class="number">0</span>) &#123;</span><br><span class="line">        BlockLocation[] blkLocations;</span><br><span class="line">        <span class="keyword">if</span> (file <span class="keyword">instanceof</span> LocatedFileStatus) &#123;</span><br><span class="line">          blkLocations = ((LocatedFileStatus) file).getBlockLocations();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          FileSystem fs = path.getFileSystem(job.getConfiguration());</span><br><span class="line">          blkLocations = fs.getFileBlockLocations(file, <span class="number">0</span>, length);</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="comment">// 判断当前文件是否可切，如果可切，切片</span></span><br><span class="line">        <span class="keyword">if</span> (isSplitable(job, path)) &#123;</span><br><span class="line">          <span class="keyword">long</span> blockSize = file.getBlockSize();</span><br><span class="line">          <span class="keyword">long</span> splitSize = computeSplitSize(blockSize, minSize, maxSize);</span><br><span class="line">           <span class="comment">// 声明待切部分数据的余量</span></span><br><span class="line">          <span class="keyword">long</span> bytesRemaining = length;</span><br><span class="line">          <span class="comment">// 如果 待切部分 / 片大小  &gt; 1.1，先切去一片，再判断</span></span><br><span class="line">          <span class="keyword">while</span> (((<span class="keyword">double</span>) bytesRemaining)/splitSize &gt; SPLIT_SLOP) &#123;</span><br><span class="line">            <span class="keyword">int</span> blkIndex = getBlockIndex(blkLocations, length-bytesRemaining);</span><br><span class="line">            splits.add(makeSplit(path, length-bytesRemaining, splitSize,</span><br><span class="line">                        blkLocations[blkIndex].getHosts(),</span><br><span class="line">                        blkLocations[blkIndex].getCachedHosts()));</span><br><span class="line">            bytesRemaining -= splitSize;</span><br><span class="line">          &#125;</span><br><span class="line"><span class="comment">// 否则，将剩余部分整个作为1片。 最后一片有可能超过片大小，但是不超过其1.1倍</span></span><br><span class="line">          <span class="keyword">if</span> (bytesRemaining != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> blkIndex = getBlockIndex(blkLocations, length-bytesRemaining);</span><br><span class="line">            splits.add(makeSplit(path, length-bytesRemaining, bytesRemaining,</span><br><span class="line">                       blkLocations[blkIndex].getHosts(),</span><br><span class="line">                       blkLocations[blkIndex].getCachedHosts()));</span><br><span class="line">          &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// not splitable</span></span><br><span class="line">         <span class="comment">// 如果不可切，整个文件作为1片！</span></span><br><span class="line">          splits.add(makeSplit(path, <span class="number">0</span>, length, blkLocations[<span class="number">0</span>].getHosts(),</span><br><span class="line">                      blkLocations[<span class="number">0</span>].getCachedHosts()));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123; </span><br><span class="line">    <span class="comment">//Create empty hosts array for zero length files</span></span><br><span class="line">    <span class="comment">// 如果文件是个空文件，创建一个切片对象，这个切片从当前文件的0offset起，向后读取0个字节</span></span><br><span class="line">        splits.add(makeSplit(path, <span class="number">0</span>, length, <span class="keyword">new</span> String[<span class="number">0</span>]));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Save the number of input files for metrics/loadgen</span></span><br><span class="line">    job.getConfiguration().setLong(NUM_INPUT_FILES, files.size());</span><br><span class="line">    sw.stop();</span><br><span class="line">    <span class="keyword">if</span> (LOG.isDebugEnabled()) &#123;</span><br><span class="line">      LOG.debug(<span class="string">&quot;Total # of splits generated by getSplits: &quot;</span> + splits.size()</span><br><span class="line">          + <span class="string">&quot;, TimeTaken: &quot;</span> + sw.now(TimeUnit.MILLISECONDS));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> splits;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ul>
+<li>1、获取当前输入目录中所有的文件</li>
+<li>2、以文件为单位，如果文件是空文件，默认创建一个空的切片</li>
+<li>3、如果文件不为空，尝试判断文件是否可以进行切片（除压缩文件外均可切片）</li>
+<li>4、如果文件不可以切片，整个文件作为一个片</li>
+<li>5、如果文件可以切片，先获取片大小（默认片大小等于块大小）<ul>
+<li>循环判断 <strong>待切部分 / 片大小 &gt; 1.1</strong>，如果成立，先切去一片，在判断这个不等式</li>
+</ul>
+</li>
+<li>6、剩余部分整个作为一片</li>
+</ul>
+<h2 id="2、从Job的配置中获取参数"><a href="#2、从Job的配置中获取参数" class="headerlink" title="2、从Job的配置中获取参数"></a>2、从Job的配置中获取参数</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">job.getConfiguration().getLong(SPLIT_MINSIZE, 1L)</span><br></pre></td></tr></table></figure>
+<h3 id="指从配置文件中获取名称为SPLIT-MINSIZE的参数，如果获取到，将参数的值返回，否则就使用默认值1L"><a href="#指从配置文件中获取名称为SPLIT-MINSIZE的参数，如果获取到，将参数的值返回，否则就使用默认值1L" class="headerlink" title="指从配置文件中获取名称为SPLIT_MINSIZE的参数，如果获取到，将参数的值返回，否则就使用默认值1L"></a>指从配置文件中获取名称为SPLIT_MINSIZE的参数，如果获取到，将参数的值返回，否则就使用默认值1L</h3><h3 id="设置Job参数"><a href="#设置Job参数" class="headerlink" title="设置Job参数"></a>设置Job参数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conf.setClass(INPUT_FORMAT_CLASS_ATTR, cls, InputFormat.class);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><em>注意：要为INPUT_FORMAT_CLASS_ATTR设置参数为cls，cls必须是InputFormat.class的子类</em></li>
+</ul>
+<h2 id="3、TextInputFormat-处理"><a href="#3、TextInputFormat-处理" class="headerlink" title="3、TextInputFormat 处理"></a>3、TextInputFormat 处理</h2><h3 id="TextInputFormat判断文件是否可以进行切片"><a href="#TextInputFormat判断文件是否可以进行切片" class="headerlink" title="TextInputFormat判断文件是否可以进行切片"></a>TextInputFormat判断文件是否可以进行切片</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">isSplitable</span><span class="params">(JobContext context, Path file)</span> </span>&#123;</span><br><span class="line"><span class="comment">// 根据文件的后缀名获取文件使用的相关的压缩格式</span></span><br><span class="line">    <span class="keyword">final</span> CompressionCodec codec = <span class="keyword">new</span> CompressionCodecFactory(context.getConfiguration()).getCodec(file);</span><br><span class="line"><span class="comment">// 如果文件不是一个压缩类型的文件，默认都可以切片</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> == codec) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//否则判断是否是一个可以切片的压缩格式，默认只有Bzip2压缩格式可切片</span></span><br><span class="line">    <span class="keyword">return</span> codec <span class="keyword">instanceof</span> SplittableCompressionCodec;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4、片大小的计算"><a href="#4、片大小的计算" class="headerlink" title="4、片大小的计算"></a>4、片大小的计算</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> splitSize = computeSplitSize(blockSize, minSize, maxSize);</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">long</span> <span class="title">computeSplitSize</span><span class="params">(<span class="keyword">long</span> blockSize, <span class="keyword">long</span> minSize,<span class="keyword">long</span> maxSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Math.max(minSize, Math.min(maxSize, blockSize));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>blockSize: 块大小<br>minSize: minSize从mapreduce.input.fileinputformat.split.minsize和1之间对比，取最大值<br>maxSize: 读取mapreduce.input.fileinputformat.split.maxsize，如果没有设置使用Long.MaxValue作为默认值</p>
+<blockquote>
+<p><em>注意：默认的片大小就是文件的块大小</em></p>
+</blockquote>
+<p>文件的块大小默认为128M，默认每片就是128M<br>调节片大小 &gt; 块大小：配置 mapreduce.input.fileinputformat.split.minsize &gt; 128M<br>调节片大小 &lt; 块大小：配置 mapreduce.input.fileinputformat.split.maxsize &lt; 128M</p>
+<blockquote>
+<p>理论上来说：如果文件的数据量是一定的话，片越大，切片数量少，启动的MapTask少，Map阶段运算慢.片越小，切片数量多，启动的MapTask多，Map阶段运算快</p>
+</blockquote>
+<h2 id="5、片和块的关系"><a href="#5、片和块的关系" class="headerlink" title="5、片和块的关系"></a>5、片和块的关系</h2><h3 id="片（InputSplit）："><a href="#片（InputSplit）：" class="headerlink" title="片（InputSplit）："></a>片（InputSplit）：</h3><blockquote>
+<p>在计算MR程序时，才会切片。片在运行程序时，临时将文件从逻辑上划分为若干部分<br>使用的输入格式不同，切片的方式不同，切片的数量也不同<br>每片的数据最终也是以块的形式存储在HDFS</p>
+</blockquote>
+<h3 id="块（block）："><a href="#块（block）：" class="headerlink" title="块（block）："></a>块（block）：</h3><blockquote>
+<p> 在向HDFS写文件时，文件中的内容以块为单位存储,块是实际的物理存在</p>
+</blockquote>
+<h3 id="提醒：片大小最好等于块大小"><a href="#提醒：片大小最好等于块大小" class="headerlink" title="提醒：片大小最好等于块大小"></a>提醒：<strong>片大小最好等于块大小</strong></h3><ul>
+<li>将片大小设置和块大小一致，可以最大限度减少因为切片带来的磁盘IO和网络IO<ul>
+<li>原因：MR计算框架速度慢的原因在于在执行MR时，会发生频繁的磁盘IO和网络IO，将片大小设置成块大小可以起到优化MR的作用。</li>
+</ul>
+</li>
 </ul>
 <hr>
-<h1 id="二、异常的写流程"><a href="#二、异常的写流程" class="headerlink" title="二、异常的写流程"></a>二、异常的写流程</h1><hr>
-<h2 id="前六个步骤同正常的写数据流程"><a href="#前六个步骤同正常的写数据流程" class="headerlink" title="前六个步骤同正常的写数据流程"></a>前六个步骤同正常的写数据流程</h2><h2 id="7-、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene-待发送-的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene-正在发送队列-，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中"><a href="#7-、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene-待发送-的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene-正在发送队列-，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中" class="headerlink" title="7 、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene(待发送)的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene(正在发送队列)，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中"></a>7 、客户端每读取64KB的数据，封装为一个packet，并放入一个称为dataQuene(待发送)的队列中，发送时，将dataquene中的packet按顺序依次放入到ackquene(正在发送队列)，由ackquene发送到传输通道中的第一个DN节点。每个节点在收到packket之后，向客户端发送ack确认消息。<strong>如果一个packet在发送之后，已经收到了所有DN节点返回的ack确认消息，这个packet会在ackquene中删除，假如在接收DN返回的ack确认消息是发生了超时，传输中止，ackquene重的packet会回滚到dataquene中</strong></h2><h2 id="8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。"><a href="#8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。" class="headerlink" title="8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。"></a>8、客户端重新请求建立新的传输通道，剔除损坏的DN节点。建立完成后，继续传输文件。</h2><ul>
-<li>只要有一个DN节点接收到了数据，并上报NN节点已经完成接收此数据块，NN就会认为当前块已经传输成功。<strong>NN会自动维护设定的文件副本数量</strong></li>
+<h1 id="二、常见的输入格式"><a href="#二、常见的输入格式" class="headerlink" title="二、常见的输入格式"></a>二、常见的输入格式</h1><h2 id="1、TextInputFormat"><a href="#1、TextInputFormat" class="headerlink" title="1、TextInputFormat"></a>1、TextInputFormat</h2><ul>
+<li>常用于输入目录中全部是文本文件的情况。<ul>
+<li>切片策略：默认的切片策略</li>
+<li>RecordReader：LineRecordReader,一次处理一行，将一行内容的偏移量作为key（类型：LongWritable），一行内容作为value（类型：Text）</li>
+</ul>
+</li>
+</ul>
+<h2 id="2、NlineInputFormat"><a href="#2、NlineInputFormat" class="headerlink" title="2、NlineInputFormat"></a>2、NlineInputFormat</h2><ul>
+<li>作用类似于TextInputFormat，但是可以自定义一次处理的行数<ul>
+<li>切片策略：读取配置中mapreduce.input.lineinputformat.linespermap，默认为1，以文件为单位，切片每此参数行作为1片</li>
+<li>RecordReader:  LineRecordReader,一次处理一行，将一行内容的偏移量作为key（类型：LongWritable），一行内容作为value（类型：Text）</li>
+</ul>
+</li>
+</ul>
+<h2 id="3、KeyValueTextInputFormat"><a href="#3、KeyValueTextInputFormat" class="headerlink" title="3、KeyValueTextInputFormat"></a>3、KeyValueTextInputFormat</h2><ul>
+<li>针对文本文件！使用分割字符，将每一行分割为key和value，如果没有找到分隔符，当前行的内容作为key，value为空串。默认分隔符为\t。</li>
+<li>可以通过参数mapreduce.input.keyvaluelinerecordreader.key.value.separator指定分隔符。<ul>
+<li>切片策略：默认的切片策略</li>
+<li>RecordReader：KeyValueLineRecordReader，key和value均是Text类型</li>
+</ul>
+</li>
+</ul>
+<h2 id="4、CombineTextInputFormat"><a href="#4、CombineTextInputFormat" class="headerlink" title="4、CombineTextInputFormat"></a>4、CombineTextInputFormat</h2><ul>
+<li>改变了传统的切片方式，将多个小文件，划分到一个切片中。适合小文件过多的场景</li>
+<li>切片策略：先确定片的最大值maxSize，maxSize可以通过参数mapreduce.input.fileinputformat.split.maxsize设置<ul>
+<li>ConbineTextInputFormat的切片流程<ul>
+<li>a、以文件为单位，将每个文件划分为若干part<ul>
+<li>①判断文件的待切部分的大小 &lt;=  maxSize,整个待切部分作为1part</li>
+<li>②maxsize &lt; 文件的待切部分的大小 &lt;= 2* maxSize,将整个待切部分均分为2part</li>
+<li>③文件的待切部分的大小 &gt; 2* maxSize,先切去maxSize大小，作为1部分，剩余待切部分继续判断</li>
+</ul>
+</li>
+<li>b、将之前切分的若干part进行累加，累加后一旦累加的大小超过 maxSize，累加的部分作为1片</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <hr>
-<h1 id="三、机架感知策略"><a href="#三、机架感知策略" class="headerlink" title="三、机架感知策略"></a>三、机架感知策略</h1><h2 id="1、网络拓扑-节点距离计算"><a href="#1、网络拓扑-节点距离计算" class="headerlink" title="1、网络拓扑-节点距离计算"></a>1、网络拓扑-节点距离计算</h2><h3 id="节点距离：两个节点到达最近的共同祖先的距离总和"><a href="#节点距离：两个节点到达最近的共同祖先的距离总和" class="headerlink" title="节点距离：两个节点到达最近的共同祖先的距离总和"></a>节点距离：两个节点到达最近的共同祖先的距离总和</h3><ul>
-<li>是一种抽象距离<h2 id="2、机架感知"><a href="#2、机架感知" class="headerlink" title="2、机架感知"></a>2、机架感知</h2><h3 id="待续，日后更新"><a href="#待续，日后更新" class="headerlink" title="待续，日后更新"></a>待续，日后更新</h3></li>
+<h1 id="三、关键设置"><a href="#三、关键设置" class="headerlink" title="三、关键设置"></a>三、关键设置</h1><h2 id="如何设置MapTask的数量"><a href="#如何设置MapTask的数量" class="headerlink" title="如何设置MapTask的数量"></a>如何设置MapTask的数量</h2><p>MapTask的数量，人为设置是无效的！只能通过切片方式来设置！<br>MapTask只取决于切片数</p>
+<hr>
+<h1 id="四、Job提交流程阶段总结"><a href="#四、Job提交流程阶段总结" class="headerlink" title="四、Job提交流程阶段总结"></a>四、Job提交流程阶段总结</h1><h2 id="1、准备阶段"><a href="#1、准备阶段" class="headerlink" title="1、准备阶段"></a>1、准备阶段</h2><p>运行Job.waitForCompletion(),先使用JobSubmitter提交Job，在提交之前，会在Job的作业目录中生成以下信息：</p>
+<ul>
+<li>job.split:  当前Job的切片信息，有几个切片对象</li>
+<li>job.splitmetainfo: 切片对象的属性信息</li>
+<li>job.xml: job所有的属性配置</li>
 </ul>
+<h2 id="2、提交阶段"><a href="#2、提交阶段" class="headerlink" title="2、提交阶段"></a>2、提交阶段</h2><p>本地模式：</p>
+<ul>
+<li>通过LocalJobRunner提交MR程序的Job<ul>
+<li>创建一个LocalJobRunner.Job(),然后通过Job.start()启动作业</li>
+</ul>
+</li>
+</ul>
+<p>Map阶段：采用线程池提交多个MapTaskRunner线程</p>
+<ul>
+<li>每个MapTaskRunable线程上，实例化一个MapTask对象</li>
+<li>每个MapTask对象，实例化一个Mapper，然后通过Mapper.run()开始计算</li>
+<li>线程运行结束，会在线程的作业目录中生成fil.out文件，保存《MapTask输出的所有key-value</li>
+<li>阶段定义：<ul>
+<li>如果有reduceTask，MapTask运行期间，分为map和sort</li>
+<li>如果没有reduceTask，MapTask运行期间只有map<ul>
+<li>map：使用RecordReader将切片中的数据读入到Mapper.map()——&gt;context.writer(key, value)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Reduce阶段：采用线程池提交多个ReduceTaskRunable线程</p>
+<ul>
+<li>每个ReduceTaskRunable线程上，实例化一个ReduceTask对象</li>
+<li>每个ReduceTask对象，实例化一个Reduce，然后通过reducer.run()开始计算</li>
+<li>线程运行结束，会在输出目录中生成part-r-000x文件，保存ReduceTask输出的所有的key-value</li>
+<li>阶段定义：<ul>
+<li>copy：使用shuffle线程复制MapTask指定分区的数据</li>
+<li>sort：将复制的所有分区的数据汇总后进行排序</li>
+<li>reduce：对排好序的数据进行合并汇总</li>
+</ul>
+</li>
+</ul>
+<p>YARN上运行：待续。</p>
+<hr>
 
                 
             </div>
@@ -516,7 +625,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="/about" rel="external nofollow noreferrer">惠俊程</a>
+                    <a href="/about" rel="external nofollow noreferrer">hjc</a>
                 </span>
             </div>
             <div class="reprint__type">
@@ -526,7 +635,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/04/28/HDFS%E7%9A%84%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B/">http://example.com/2021/04/28/HDFS%E7%9A%84%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B/</a>
+                    <a href="http://example.com/2021/05/02/MapReduce%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B%E4%B8%ADJob%E6%8F%90%E4%BA%A4%E7%9A%84%E6%B5%81%E7%A8%8B/">http://example.com/2021/05/02/MapReduce%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B%E4%B8%ADJob%E6%8F%90%E4%BA%A4%E7%9A%84%E6%B5%81%E7%A8%8B/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -539,7 +648,7 @@
                     本博客所有文章除特別声明外，均采用
                     <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
                     许可协议。转载请注明来源
-                    <a href="/about" target="_blank">惠俊程</a>
+                    <a href="/about" target="_blank">hjc</a>
                     !
                 </span>
             </div>
@@ -564,12 +673,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/HDFS/">
-                                    <span class="chip bg-color">HDFS</span>
-                                </a>
-                            
                                 <a href="/tags/Hadoop/">
                                     <span class="chip bg-color">Hadoop</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+                                    <span class="chip bg-color">源码分析</span>
                                 </a>
                             
                         </div>
@@ -765,13 +874,13 @@
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2021/05/01/Mapreduce%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3/">
+                <a href="/2021/05/02/%E8%87%AA%E5%AE%9A%E4%B9%89MapReduce%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BE%93%E5%85%A5%E6%A0%BC%E5%BC%8F/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Mapreduce核心编程思想">
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="自定义MapReduce程序的输入格式">
                         
-                        <span class="card-title">Mapreduce核心编程思想</span>
+                        <span class="card-title">自定义MapReduce程序的输入格式</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -782,14 +891,14 @@
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-05-01
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-05-02
                         </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Hadoop/" class="post-category">
-                                    Hadoop
+                            <a href="/categories/MapReduce/" class="post-category">
+                                    MapReduce
                                 </a>
                             
                             
@@ -799,8 +908,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Mapreduce/">
-                        <span class="chip bg-color">Mapreduce</span>
+                    <a href="/tags/Hadoop/">
+                        <span class="chip bg-color">Hadoop</span>
+                    </a>
+                    
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
                     </a>
                     
                 </div>
@@ -814,12 +927,13 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2021/04/26/Java%E5%B8%B8%E7%94%A8API%E6%93%8D%E4%BD%9CHDFS/">
+                <a href="/2021/05/01/NameNode%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">
                     <div class="card-image">
                         
-                        <img src="/source/images/1.png" class="responsive-img" alt="Java常用API操作HDFS">
                         
-                        <span class="card-title">Java常用API操作HDFS</span>
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="NameNode学习记录">
+                        
+                        <span class="card-title">NameNode学习记录</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -830,14 +944,14 @@
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-04-26
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-05-01
                             </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Hadoop/" class="post-category">
-                                    Hadoop
+                            <a href="/categories/HDFS/" class="post-category">
+                                    HDFS
                                 </a>
                             
                             
@@ -847,16 +961,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/HDFS/">
-                        <span class="chip bg-color">HDFS</span>
-                    </a>
-                    
                     <a href="/tags/Hadoop/">
                         <span class="chip bg-color">Hadoop</span>
                     </a>
                     
-                    <a href="/tags/Java/">
-                        <span class="chip bg-color">Java</span>
+                    <a href="/tags/NameNode/">
+                        <span class="chip bg-color">NameNode</span>
                     </a>
                     
                 </div>
