@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="NameNode学习记录, 絵空事">
+    <meta name="keywords" content="MapTask的shuffle细节, 絵空事">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>NameNode学习记录 | 絵空事</title>
+    <title>MapTask的shuffle细节 | 絵空事</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -310,12 +310,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/6.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">NameNode学习记录</h1>
+                    <h1 class="description center-align post-title">MapTask的shuffle细节</h1>
                 </div>
             </div>
         </div>
@@ -435,8 +435,12 @@
                                 <span class="chip bg-color">Hadoop</span>
                             </a>
                         
-                            <a href="/tags/NameNode/">
-                                <span class="chip bg-color">NameNode</span>
+                            <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+                                <span class="chip bg-color">源码分析</span>
+                            </a>
+                        
+                            <a href="/tags/Shuffle/">
+                                <span class="chip bg-color">Shuffle</span>
                             </a>
                         
                     </div>
@@ -447,8 +451,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/HDFS/" class="post-category">
-                                HDFS
+                            <a href="/categories/MapReduce/" class="post-category">
+                                MapReduce
                             </a>
                         
                     </div>
@@ -460,7 +464,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-05-01
+                    2021-05-14
                 </div>
                 
 
@@ -469,7 +473,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    800
+                    1.9k
                 </div>
                 
 
@@ -486,56 +490,119 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="一、Namenode的工作原理"><a href="#一、Namenode的工作原理" class="headerlink" title="一、Namenode的工作原理"></a>一、Namenode的工作原理</h1><h2 id="1、NameNode的作用"><a href="#1、NameNode的作用" class="headerlink" title="1、NameNode的作用"></a>1、NameNode的作用</h2><ul>
-<li>保存HDFS上所有文件的元数据</li>
-<li>接收客户端的请求</li>
-<li>接收DataNode上报的信息，给DataNode分配任务(维护副本数量)</li>
-<li><h3 id="1）元数据的存储"><a href="#1）元数据的存储" class="headerlink" title="1）元数据的存储"></a><strong>1）元数据的存储</strong></h3><ul>
-<li>元数据存储在fsimage文件和edits文件中<ul>
-<li>fsimage–元数据的快照文件<ul>
-<li>fsimage文件是如何产生的：<ul>
-<li> 首先：在hadoop集群第一次格式化是，会创建NameNode的工作目录，并在这个目录中生成一个fsimage_000000000000文件</li>
-<li> 其次：在NameNode启动时，NameNode会将所有的edits文件个fsimage文件加载到内存合并得到最新的元数据信息，后将元数据持久化到磁盘生成新的fsimage文件</li>
-<li> 如果，hadoop集群启用了2nn，2nn也会辅助NameNode辅助合并元数据，并将合并后的元数据发送到NameNode</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>edits–记录所有写操作的文件<ul>
-<li> NameNode启动后，每次接收的写操作都会记录到edits文件中，edits文件每个一定的时间和大小滚动。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>txid: 每次写操作命令，分解成若干步，每一个步骤都会有一个id，这个id就是txid。</li>
-<li>NameNode负责集群中所有客户端的请求和所有DataNode的请求，在一个集群中，通常NameNode需要一个高配置来保证NameNode可以及时处理这些请求，一定NameNode无法及时处理请求，HDFS就已经瘫痪</li>
-</ul>
-</li>
-<li><h3 id="2）NameNode元数据的组成"><a href="#2）NameNode元数据的组成" class="headerlink" title="2）NameNode元数据的组成"></a><strong>2）NameNode元数据的组成</strong></h3><ul>
-<li>（1）inodes：记录在fsimage文件或edits文件中</li>
-<li>（2）blocklist：块的位置信息，每次DataNode启动后自动上报，无法从配置文件中获取。</li>
-</ul>
-</li>
-</ul>
-<h2 id="2、NameNode的启动过程"><a href="#2、NameNode的启动过程" class="headerlink" title="2、NameNode的启动过程"></a>2、NameNode的启动过程</h2><ul>
-<li>1）先加载fsimage_0000000000xxx文件到内存</li>
-<li>2）将fsimage文件xxx之后的edits文件加载到内存</li>
-<li>3）合并生成最新的元数据，记录checkpoint，如果满足要求，执行saveNamespace操作，不满足等待满足条件后执行（saveNamespace必须在安全模式下进行）</li>
-<li>4）自动进入安全模式，等待DataNode上报块的信息，满足条件后离开安全模式</li>
+                <h1 id="MapTask的shuffle细节"><a href="#MapTask的shuffle细节" class="headerlink" title="MapTask的shuffle细节"></a>MapTask的shuffle细节</h1><h3 id="1、记录输出收集器的赋值"><a href="#1、记录输出收集器的赋值" class="headerlink" title="1、记录输出收集器的赋值"></a>1、记录输出收集器的赋值</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (job.getNumReduceTasks() == <span class="number">0</span>) &#123;</span><br><span class="line">      output = </span><br><span class="line">        <span class="keyword">new</span> NewDirectOutputCollector(taskContext, job, umbilical, reporter);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      output = <span class="keyword">new</span> NewOutputCollector(taskContext, job, umbilical, reporter);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果没有Reduce阶段，使用直接的记录收集器，它不会读取数据并进行排序。只会按照Mapper的输出顺序写出。如果有Reduce阶段，使用NewOutputCollector来收集记录。</li>
 </ul>
 <hr>
-<h1 id="二、HDFS集群的注册"><a href="#二、HDFS集群的注册" class="headerlink" title="二、HDFS集群的注册"></a>二、HDFS集群的注册</h1><h2 id="1、VERSION文件"><a href="#1、VERSION文件" class="headerlink" title="1、VERSION文件"></a>1、VERSION文件</h2><ul>
-<li>每次格式化NameNode，会产生一个VERSOION文件，负责记录NameNode的集群信息</li>
-<li>每次格式化NameNode时，重新生成clusterID和blockpoolId（会被DataNode领取，生成一个同名目录，每次DataNode启动时，会将这个同名目录中的块上报给NameNode）</li>
+<h3 id="2、MapTask记录输出收集器初始化"><a href="#2、MapTask记录输出收集器初始化" class="headerlink" title="2、MapTask记录输出收集器初始化"></a>2、MapTask记录输出收集器初始化</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">NewOutputCollector(org.apache.hadoop.mapreduce.JobContext jobContext,</span><br><span class="line">                       JobConf job,</span><br><span class="line">                       TaskUmbilicalProtocol umbilical,</span><br><span class="line">                       TaskReporter reporter</span><br><span class="line">                       ) <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">      <span class="comment">//真正干活的收集器，缓存区对象，这个缓冲区对其会对收集的记录进行排序</span></span><br><span class="line">      collector = createSortingCollector(job, reporter);</span><br><span class="line">      <span class="comment">// 获取当前job所有的reduceTask数量，以此数量作为总的分区数，默认JobReduceTask的数量为1</span></span><br><span class="line">partitions = jobContext.getNumReduceTasks();</span><br><span class="line"><span class="comment">// 为MapTask使用的分区器进行赋值</span></span><br><span class="line"><span class="keyword">if</span> (partitions &gt; <span class="number">1</span>) &#123;</span><br><span class="line">        partitioner = (org.apache.hadoop.mapreduce.Partitioner&lt;K,V&gt;)</span><br><span class="line">          ReflectionUtils.newInstance(jobContext.getPartitionerClass(), job);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 默认使用此分区器进行分区，这个分区器将所有的key-value都分到0号区</span></span><br><span class="line">        partitioner = <span class="keyword">new</span> org.apache.hadoop.mapreduce.Partitioner&lt;K,V&gt;() &#123;</span><br><span class="line">          <span class="meta">@Override</span></span><br><span class="line">          <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPartition</span><span class="params">(K key, V value, <span class="keyword">int</span> numPartitions)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> partitions - <span class="number">1</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3、获取Partitioner"><a href="#3、获取Partitioner" class="headerlink" title="3、获取Partitioner"></a>3、获取Partitioner</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">  <span class="keyword">public</span> Class&lt;? extends Partitioner&lt;?,?&gt;&gt; getPartitionerClass() </span><br><span class="line">     <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">    <span class="keyword">return</span> (Class&lt;? extends Partitioner&lt;?,?&gt;&gt;) </span><br><span class="line">      conf.getClass(PARTITIONER_CLASS_ATTR, HashPartitioner.class);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>从配置中获取mapreduce.job.partitioner.class参数，如果没有设置，默认使用HashPartitioner作为分区器。</li>
 </ul>
-<h2 id="2、NameNode中的VERSION"><a href="#2、NameNode中的VERSION" class="headerlink" title="2、NameNode中的VERSION"></a>2、NameNode中的VERSION</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#Sat May 01 11:00:35 CST 2021</span><br><span class="line">namespaceID&#x3D;1510717386</span><br><span class="line">clusterID&#x3D;CID-314ce333-4b1e-48a4-94e9-fd152d5f7a30</span><br><span class="line">cTime&#x3D;0</span><br><span class="line">storageType&#x3D;NAME_NODE</span><br><span class="line">blockpoolID&#x3D;BP-930909093-192.168.134.161-1617984597767</span><br><span class="line">layoutVersion&#x3D;-63</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>HashPartitioner是如何进行分区的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashPartitioner</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">Partitioner</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123; </span><br><span class="line"><span class="comment">/** Use &#123;<span class="doctag">@link</span> Object#hashCode()&#125; to partition. */</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPartition</span><span class="params">(K key, V value, <span class="keyword">int</span> numReduceTasks)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> (key.hashCode() &amp; Integer.MAX_VALUE) % numReduceTasks;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<h3 id="4、缓冲区对象的初始化"><a href="#4、缓冲区对象的初始化" class="headerlink" title="4、缓冲区对象的初始化"></a>4、缓冲区对象的初始化</h3><p>如果有Reducer阶段，在MapTask中使用MapOutputBuffer作为缓冲区的实现类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(MapOutputCollector.Context context</span></span></span><br><span class="line"><span class="function"><span class="params">                    )</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;</span><br><span class="line">     </span><br><span class="line"></span><br><span class="line">      <span class="comment">//sanity checks</span></span><br><span class="line">     <span class="comment">// 获取当前缓冲区溢写的阀值，默认读取配置中mapreduce.map.sort.spill.percent</span></span><br><span class="line">没有配置，默认为<span class="number">0.8</span></span><br><span class="line"> <span class="keyword">final</span> <span class="keyword">float</span> spillper =        job.getFloat(JobContext.MAP_SORT_SPILL_PERCENT, (<span class="keyword">float</span>)<span class="number">0.8</span>);</span><br><span class="line">     <span class="comment">//获取缓冲区的初始大小，读取mapreduce.task.io.sort.mb，如果没有配置，默认为100</span></span><br><span class="line"> <span class="keyword">final</span> <span class="keyword">int</span> sortmb = job.getInt(JobContext.IO_SORT_MB, <span class="number">100</span>);</span><br><span class="line">      indexCacheMemoryLimit = job.getInt(JobContext.INDEX_CACHE_MEMORY_LIMIT,</span><br><span class="line">                                         INDEX_CACHE_MEMORY_LIMIT_DEFAULT);</span><br><span class="line">      <span class="keyword">if</span> (spillper &gt; (<span class="keyword">float</span>)<span class="number">1.0</span> || spillper &lt;= (<span class="keyword">float</span>)<span class="number">0.0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;Invalid \&quot;&quot;</span> + JobContext.MAP_SORT_SPILL_PERCENT +</span><br><span class="line">            <span class="string">&quot;\&quot;: &quot;</span> + spillper);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> ((sortmb &amp; <span class="number">0x7FF</span>) != sortmb) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IOException(</span><br><span class="line">            <span class="string">&quot;Invalid \&quot;&quot;</span> + JobContext.IO_SORT_MB + <span class="string">&quot;\&quot;: &quot;</span> + sortmb);</span><br><span class="line">      &#125;</span><br><span class="line"><span class="comment">// 实例化排序器，默认使用快排，只排索引</span></span><br><span class="line">      sorter = ReflectionUtils.newInstance(job.getClass(<span class="string">&quot;map.sort.class&quot;</span>,</span><br><span class="line">            QuickSort.class, IndexedSorter.class), job);</span><br><span class="line">      </span><br><span class="line"></span><br><span class="line">      <span class="comment">// k/v serialization</span></span><br><span class="line">      comparator = job.getOutputKeyComparator();</span><br><span class="line">  <span class="comment">// 根据Mapper输出的Key-value类型，获取序列化器</span></span><br><span class="line"><span class="comment">// 如果Mapper的输出Key-value实现了Wriable接口，Hadoop自动提供序列化器</span></span><br><span class="line"><span class="comment">// 如果Mapper输出的key-value没有实现Wriable接口，需要自定提供序列化器，设置到Job中</span></span><br><span class="line">      keyClass = (Class&lt;K&gt;)job.getMapOutputKeyClass();</span><br><span class="line">      valClass = (Class&lt;V&gt;)job.getMapOutputValueClass();</span><br><span class="line">      serializationFactory = <span class="keyword">new</span> SerializationFactory(job);</span><br><span class="line">      keySerializer = serializationFactory.getSerializer(keyClass);</span><br><span class="line">      keySerializer.open(bb);</span><br><span class="line">      valSerializer = serializationFactory.getSerializer(valClass);</span><br><span class="line">      valSerializer.open(bb);</span><br><span class="line"></span><br><span class="line">   <span class="comment">//MapTask输出的记录可以使用压缩格式，到ReduceTask时，再解压缩</span></span><br><span class="line">  <span class="comment">// 压缩可以节省磁盘IO和网络IO，提供MR的运行效率</span></span><br><span class="line">      <span class="comment">// compression</span></span><br><span class="line">      <span class="keyword">if</span> (job.getCompressMapOutput()) &#123;</span><br><span class="line">        Class&lt;? extends CompressionCodec&gt; codecClass =</span><br><span class="line">          job.getMapOutputCompressorClass(DefaultCodec.class);</span><br><span class="line">        codec = ReflectionUtils.newInstance(codecClass, job);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        codec = <span class="keyword">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// combiner</span></span><br><span class="line">      <span class="keyword">final</span> Counters.Counter combineInputCounter =</span><br><span class="line">        reporter.getCounter(TaskCounter.COMBINE_INPUT_RECORDS);</span><br><span class="line">      combinerRunner = CombinerRunner.create(job, getTaskID(), </span><br><span class="line">                                             combineInputCounter,</span><br><span class="line">                                             reporter, <span class="keyword">null</span>);</span><br><span class="line">      <span class="keyword">if</span> (combinerRunner != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">final</span> Counters.Counter combineOutputCounter =</span><br><span class="line">          reporter.getCounter(TaskCounter.COMBINE_OUTPUT_RECORDS);</span><br><span class="line">        combineCollector= <span class="keyword">new</span> CombineOutputCollector&lt;K,V&gt;(combineOutputCounter, reporter, job);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        combineCollector = <span class="keyword">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      spillInProgress = <span class="keyword">false</span>;</span><br><span class="line">      minSpillsForCombine = job.getInt(JobContext.MAP_COMBINE_MIN_SPILLS, <span class="number">3</span>);</span><br><span class="line">      spillThread.setDaemon(<span class="keyword">true</span>);</span><br><span class="line">      spillThread.setName(<span class="string">&quot;SpillThread&quot;</span>);</span><br><span class="line">      spillLock.lock();</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        spillThread.start();</span><br><span class="line">        <span class="keyword">while</span> (!spillThreadRunning) &#123;</span><br><span class="line">          spillDone.await();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;Spill thread failed to initialize&quot;</span>, e);</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        spillLock.unlock();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (sortSpillException != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;Spill thread failed to initialize&quot;</span>,</span><br><span class="line">            sortSpillException);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="3、DataNode中的VERSIO"><a href="#3、DataNode中的VERSIO" class="headerlink" title="3、DataNode中的VERSIO"></a>3、DataNode中的VERSIO</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#Sat May 01 11:00:36 CST 2021</span><br><span class="line">storageID&#x3D;DS-2850aa81-35cd-4265-9811-fc5cdf76867a</span><br><span class="line">clusterID&#x3D;CID-314ce333-4b1e-48a4-94e9-fd152d5f7a30</span><br><span class="line">cTime&#x3D;0</span><br><span class="line">datanodeUuid&#x3D;7b49ff48-f0fa-444a-a0ce-3199e2b9132a</span><br><span class="line">storageType&#x3D;DATA_NODE</span><br><span class="line">layoutVersion&#x3D;-56</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="5、获取Mapper输出的Key的比较器"><a href="#5、获取Mapper输出的Key的比较器" class="headerlink" title="5、获取Mapper输出的Key的比较器"></a>5、获取Mapper输出的Key的比较器</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> RawComparator <span class="title">getOutputKeyComparator</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">// 从配置中获取mapreduce.job.output.key.comparator.class的值，必须是RawComparator类型，如果没有配置，默认为null</span></span><br><span class="line">    Class&lt;? extends RawComparator&gt; theClass = getClass(</span><br><span class="line">      JobContext.KEY_COMPARATOR, <span class="keyword">null</span>, RawComparator.class);</span><br><span class="line"><span class="comment">// 一旦用户配置了此参数，实例化一个用户自定义的比较器实例</span></span><br><span class="line">    <span class="keyword">if</span> (theClass != <span class="keyword">null</span>)</span><br><span class="line">      <span class="keyword">return</span> ReflectionUtils.newInstance(theClass, <span class="keyword">this</span>);</span><br><span class="line"><span class="comment">//用户没有配置，判断Mapper输出的key的类型是否是WritableComparable的子类，如果不是，就抛异常，如果是，系统会自动为我们提供一个key的比较器</span></span><br><span class="line">    <span class="keyword">return</span> WritableComparator.get(getMapOutputKeyClass().asSubclass(WritableComparable.class), <span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="DataNode在第一次启动时，如果没有VERSION的信息，回想配置文件中配置的NameNode发起请求，生成VERSION，加入到集群中。"><a href="#DataNode在第一次启动时，如果没有VERSION的信息，回想配置文件中配置的NameNode发起请求，生成VERSION，加入到集群中。" class="headerlink" title="DataNode在第一次启动时，如果没有VERSION的信息，回想配置文件中配置的NameNode发起请求，生成VERSION，加入到集群中。"></a><em>DataNode在第一次启动时，如果没有VERSION的信息，回想配置文件中配置的NameNode发起请求，生成VERSION，加入到集群中。</em></h3><hr>
-<h1 id="三、安全模式"><a href="#三、安全模式" class="headerlink" title="三、安全模式"></a>三、安全模式</h1><h2 id="1、NameNode在启动时，当NameNode将所有的元数据加载完成后，等待DataNode上报块的信息。"><a href="#1、NameNode在启动时，当NameNode将所有的元数据加载完成后，等待DataNode上报块的信息。" class="headerlink" title="1、NameNode在启动时，当NameNode将所有的元数据加载完成后，等待DataNode上报块的信息。"></a>1、NameNode在启动时，当NameNode将所有的元数据加载完成后，等待DataNode上报块的信息。</h2><ul>
-<li>当NameNode中所保存的所有块的最小副本数（默认1） / 块的总数 &gt; 0.9999时，NameNode会离开安全模式。</li>
-<li>在安全模式下，客户端只能进行有限的去操作，不能进行写操作。</li>
+<p>如何自定义比较器？</p>
+<ul>
+<li><p>1）、自定义一个类，这个类必须是RawComparator的子类，并设置参数mapreduce.job.output.key.comparator.class = 自定义的类。 </p>
+<ul>
+<li>自定义类是，可以继承WritableComparator接口，也可以实现RawComparator</li>
+<li>调用方法时，先调用RawComparator.compare(byte[] b1, int s1, int l1, byte[] b2, int s2, int l2),在调用RawComparator.compare()</li>
+</ul>
+</li>
+<li><p>2）、定义Mapper输出的key，让这个Key类实现WritableComparator接口，实现CompareTo()方法。</p>
+</li>
+</ul>
+<hr>
+<h3 id="6-Combiner"><a href="#6-Combiner" class="headerlink" title="6 Combiner"></a>6 Combiner</h3><p>什么是Combiner？</p>
+<ul>
+<li>Combiner实际上本质是一个Reducer类，只有在设置了之后才会运行。</li>
+</ul>
+<p>Combiner和Reducer的区别：</p>
+<ul>
+<li>map—sort—copy—sort—reduce<ul>
+<li>Reducer是在reduce阶段调用的，Combiner是在shuffle阶段调用的</li>
+<li>本质上都是Reducer类，作用都是对相同的key的key-value进行合并</li>
+</ul>
+</li>
+</ul>
+<p>Combiner的意义：</p>
+<ul>
+<li>在shuffle阶段对相同key的key-value提前进行合并，可以减少磁盘IO和网络IO</li>
+</ul>
+<p>Combiner在MapTask中使用的场景：</p>
+<blockquote>
+<p>每次内存溢写前会调用Combiner对溢写的数据进行局部合并<br>在merge时，如果溢写的片段数大于三个，且设置了Combiner，Combiner会再次对数据进行Combiner</p>
+</blockquote>
+<p>Combiner在ReduceTask中使用的场景：</p>
+<blockquote>
+<p>shuffle线程复制多个MapTask同一分区的数据，复制后执行merge和sort命令，如果复制的数据量过大，需要将部分数据先合并排序后溢写到磁盘，如果设置了Combiner，数据全部复制后，会执行Combiner把磁盘中所有的小部分数据整合排序成一个完整的数据</p>
+</blockquote>
+<hr>
+<h3 id="7、总结"><a href="#7、总结" class="headerlink" title="7、总结"></a>7、总结</h3><p>分区：</p>
+<ul>
+<li><p>总的分区数取决于reduceTask的数量</p>
+<ul>
+<li>一个Job要启动几个reducetask，取决于用户期望产生几个分区，每个分区最后都会生成一个结果文件</li>
+</ul>
+</li>
+<li><p>分区的确定：</p>
+<ul>
+<li>reducetask数量大于一，尝试获取用户设置的Partitioner，如果没有设置，默认使用HashPartitioner</li>
+<li>reducetask数量小于等于一，系统会默认提供一个Partitioner，这个Partitioner会将所有的记录分到0号区</li>
+</ul>
+</li>
+</ul>
+<p>排序：</p>
+<ul>
+<li>每次内存中的数据溢写到磁盘中时，使用快速排序</li>
+<li>最后merge数据时，使用归并排序。</li>
+</ul>
+<p>比较器： </p>
+<ul>
+<li>排序时根据比较器比较的结果进行排序<ul>
+<li>如果用户自定义了比较器，MapReducer就会使用用户自定义的比较器</li>
+<li>如果用户没有自定义比较器，那么Mapper输出的key需要实现WritableComparator接口，只要实现了这个接口，系统会自动提供比较器</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>总结：不管是自己实现比较器还是实现WritableComparator接口，最后在进行比较时，都是调用自己实现的CompareTo()方法的。</p>
+</blockquote>
+<p>Combiner：</p>
+<ul>
+<li>Combiner在shuffle阶段执行<ul>
+<li>每次溢写前会调用Combiner对溢写的数据进行局部合并</li>
+<li>在merge时，如果溢写的片段数 &gt; 3，并设置了Combiner，Combiner会再次对数据进行Combiner</li>
+</ul>
+</li>
+</ul>
+<p>执行流程：</p>
+<ul>
+<li>Partitioner计算分区</li>
+<li>满足溢写条件，所有数据进行排序，排序时使用比较器对比key<ul>
+<li>每次溢写前的排序默认使用快速排序</li>
+<li>如果设置了Combiner，在溢写前，排好序的结果会先被Combiner进行combine之后再溢写</li>
+</ul>
+</li>
+<li>第二个步骤可能会重复很多次，直至所有数据读取完毕</li>
+<li>所有的溢写片段需要merge为一个总的文件<ul>
+<li>合并时使用的是归并排序，对key进行排序</li>
+<li>如果溢写片段数量超过3，在溢写成一个最终的文件时，Combiner再次调用，执行Combine，combine后再溢写</li>
+</ul>
+</li>
 </ul>
 <hr>
 
@@ -564,7 +631,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://example.com/2021/05/01/NameNode%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">http://example.com/2021/05/01/NameNode%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/</a>
+                    <a href="http://example.com/2021/05/14/MapTask%E7%9A%84shuffle%E7%BB%86%E8%8A%82/">http://example.com/2021/05/14/MapTask%E7%9A%84shuffle%E7%BB%86%E8%8A%82/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -606,8 +673,12 @@
                                     <span class="chip bg-color">Hadoop</span>
                                 </a>
                             
-                                <a href="/tags/NameNode/">
-                                    <span class="chip bg-color">NameNode</span>
+                                <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+                                    <span class="chip bg-color">源码分析</span>
+                                </a>
+                            
+                                <a href="/tags/Shuffle/">
+                                    <span class="chip bg-color">Shuffle</span>
                                 </a>
                             
                         </div>
@@ -799,17 +870,18 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2021/05/02/MapReduce%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B%E4%B8%ADJob%E6%8F%90%E4%BA%A4%E7%9A%84%E6%B5%81%E7%A8%8B/">
+                <a href="/2021/05/14/MapTask%E7%9A%84shuffle%E7%BB%86%E8%8A%82/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="MapReduce程序运行流程中Job提交的流程">
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="MapTask的shuffle细节">
                         
-                        <span class="card-title">MapReduce程序运行流程中Job提交的流程</span>
+                        <span class="card-title">MapTask的shuffle细节</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -819,9 +891,67 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-05-02
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-05-14
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/MapReduce/" class="post-category">
+                                    MapReduce
+                                </a>
+                            
+                            
                         </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Hadoop/">
+                        <span class="chip bg-color">Hadoop</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+                        <span class="chip bg-color">源码分析</span>
+                    </a>
+                    
+                    <a href="/tags/Shuffle/">
+                        <span class="chip bg-color">Shuffle</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2021/05/02/%E8%87%AA%E5%AE%9A%E4%B9%89MapReduce%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BE%93%E5%85%A5%E6%A0%BC%E5%BC%8F/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="自定义MapReduce程序的输入格式">
+                        
+                        <span class="card-title">自定义MapReduce程序的输入格式</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-05-02
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -841,57 +971,8 @@
                         <span class="chip bg-color">Hadoop</span>
                     </a>
                     
-                    <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
-                        <span class="chip bg-color">源码分析</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/05/01/Mapreduce%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="Mapreduce核心编程思想">
-                        
-                        <span class="card-title">Mapreduce核心编程思想</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-05-01
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Hadoop/" class="post-category">
-                                    Hadoop
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/Mapreduce/">
-                        <span class="chip bg-color">Mapreduce</span>
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
                     </a>
                     
                 </div>
